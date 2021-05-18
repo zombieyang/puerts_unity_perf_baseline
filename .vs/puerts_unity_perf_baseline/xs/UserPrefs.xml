@@ -1,0 +1,29 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Tests/PerformanceTest/SetCallJsArgument.cs">
+    <Files>
+      <File FileName="Assets/Puerts/Puerts-CSharp/Src/ObjectPool.cs" Line="1" Column="1" />
+      <File FileName="Assets/Tests/PerformanceTest/_Util.cs" Line="1" Column="1" />
+      <File FileName="Assets/Tests/PerformanceTest/SetCallJsArgument.cs" Line="168" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="puerts_unity_perf_baseline" expanded="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <DisabledProjects>
+    <String>Assembly-CSharp-Editor.csproj</String>
+    <String>Assembly-CSharp.csproj</String>
+    <String>Puerts-CSharp.csproj</String>
+    <String>PuertsTestClass.csproj</String>
+    <String>Tests.csproj</String>
+  </DisabledProjects>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
