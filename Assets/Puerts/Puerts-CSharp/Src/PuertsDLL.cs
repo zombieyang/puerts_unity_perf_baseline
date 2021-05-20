@@ -30,6 +30,11 @@ namespace Puerts
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
+    public unsafe delegate void V8Function(IntPtr isolate, CSharpToJsValue* info, IntPtr self, int paramLen, long data);
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+#endif
     public delegate IntPtr V8ConstructorCallback(IntPtr isolate, IntPtr info, int paramLen, long data);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
@@ -40,6 +45,28 @@ namespace Puerts
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct ValueUnion
+    {
+        [FieldOffset(0)]
+        public double Number;
+        [FieldOffset(0)]
+        public bool Boolean;
+        [FieldOffset(0)]
+        public long BigInt;
+        [FieldOffset(0)]
+        public IntPtr Pointer;
+    };
+
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    public struct CSharpToJsValue
+    {
+        public JsValueType Type;
+        public int ClassIDOrValueLength;
+        public ValueUnion Data;
+    };
+
     public delegate void LogCallback(string content);
 
     [Flags]
@@ -90,6 +117,18 @@ namespace Puerts
 #endif
             IntPtr fn = v8FunctionCallback == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(v8FunctionCallback);
             SetGlobalFunction(isolate, name, fn, data);
+        }
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetGlobalFunctionV2(IntPtr isolate, string name, IntPtr v8FunctionCallback, long data);
+
+        public static void SetGlobalFunction(IntPtr isolate, string name, V8Function v8FunctionCallback, long data)
+        {
+#if PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
+            GCHandle.Alloc(v8FunctionCallback);
+#endif
+            IntPtr fn = v8FunctionCallback == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(v8FunctionCallback);
+            SetGlobalFunctionV2(isolate, name, fn, data);
         }
 
         private static string GetStringFromNative(IntPtr str, int strlen)
