@@ -4,12 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using XLua;
 
+[LuaCallCSharp]
 public class NewBehaviourScript : MonoBehaviour
 {
-
     public Text text1;
     public Text text2;
+    public Text text3;
 
     // Start is called before the first frame update
     unsafe void Start()
@@ -37,9 +39,31 @@ public class NewBehaviourScript : MonoBehaviour
             Date.now() - start2;
         ");
         text2.text = "new: " + resultNew;
+
+        LuaEnv luaEnv = new LuaEnv();
+        luaEnv.DoString(@"
+            local aaa = CS.NewBehaviourScript.int4
+            for i=1,10000,1 do
+                aaa(1,2,3,4);
+            end
+
+            local starttime = os.clock(); 
+            for i=1,1000000,1 do
+                aaa(1,2,3,4);
+            end
+            local endtime = os.clock();
+            
+            usetime = (endtime - starttime) * 1000
+        ");
+        text3.text = "lua: " + (int)luaEnv.Global.Get<double>("usetime");
     }
 
-    [MonoPInvokeCallback(typeof(V8FunctionCallback))]
+    public static void int4(int int1, int int2, int int3, int int4)
+    {
+
+    }
+
+    [Puerts.MonoPInvokeCallback(typeof(V8FunctionCallback))]
     public static void v8FunctionCallback(IntPtr isolate, IntPtr info, IntPtr self, int paramLen, long data)
     {
         var argHelper0 = new Puerts.ArgumentHelper((int)data, isolate, info, 0);
@@ -56,7 +80,7 @@ public class NewBehaviourScript : MonoBehaviour
         }
     }
 
-    [MonoPInvokeCallback(typeof(V8Function))]
+    [Puerts.MonoPInvokeCallback(typeof(V8Function))]
     public static unsafe void newFunctionCallback(IntPtr isolate, CSharpToJsValue* value, IntPtr self, int paramLen, long data)
     {
         // UnityEngine.Debug.Log(value[0].Data.Number + "_" + value[1].Data.Number + "_" + value[2].Data.Number + "_" + value[3].Data.Number);

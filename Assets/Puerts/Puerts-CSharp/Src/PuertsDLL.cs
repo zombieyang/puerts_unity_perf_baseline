@@ -42,9 +42,6 @@ namespace Puerts
 #endif
     public delegate void V8DestructorCallback(IntPtr self, long data);
 
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-#endif
 
     [StructLayout(LayoutKind.Explicit)]
     public struct ValueUnion
