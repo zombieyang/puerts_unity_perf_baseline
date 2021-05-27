@@ -12,11 +12,39 @@ public class NewBehaviourScript : MonoBehaviour
     public Text text1;
     public Text text2;
     public Text text3;
+    public Text builtinZombie;
+    public Text bindedZombie;
 
     // Start is called before the first frame update
     unsafe void Start()
     {
         JsEnv env = new JsEnv();
+        //JsEnv env = new JsEnv(new DefaultLoader(), 9200);
+        //env.WaitDebugger();
+
+        double bindedTime = env.Eval<double>(@"
+            (function () {
+                const start = Date.now()
+                for (let i = 0; i < 10000000; i++) {
+                    zombie();
+                }
+                return Date.now() - start;
+            })()
+        ");
+        bindedZombie.text = "binded: " + bindedTime;
+
+        double builtinTime = env.Eval<double>(@"
+            (function () {
+                const start = Date.now()
+                for (let i = 0; i < 10000000; i++) {
+                    String.zombie();
+                }
+                return Date.now() - start;
+            })()
+        ");
+        builtinZombie.text = "builtin: " + builtinTime;
+
+
         PuertsDLL.SetGlobalFunction(env.isolate, "oldCallback", v8FunctionCallback, 0);
         PuertsDLL.SetGlobalFunction(env.isolate, "newCallback", newFunctionCallback, 0);
         double resultOld = env.Eval<double>(@"
