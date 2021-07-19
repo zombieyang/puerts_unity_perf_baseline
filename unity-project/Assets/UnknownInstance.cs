@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-
 public class ConcreteUnknown : IUnknown
 {
     public override void Reset()
