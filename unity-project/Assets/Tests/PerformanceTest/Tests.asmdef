@@ -1,13 +1,16 @@
 {
     "name": "Tests",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
         "Puerts-CSharp",
         "Unity.PerformanceTesting",
         "PuertsTestClass"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
