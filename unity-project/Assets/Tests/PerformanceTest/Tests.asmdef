@@ -5,6 +5,7 @@
     ],
     "references": [
         "Puerts-CSharp",
+        "XLua-CSharp",
         "Unity.PerformanceTesting",
         "PuertsTestClass"
     ],

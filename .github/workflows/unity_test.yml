@@ -26,10 +26,11 @@ jobs:
             Library-
       - name: Install libc++-dev
         run: |
-          sudo apt-get install clang
-          sudo apt-get install libc++-dev
-          sudo apt-get install libc++abi-dev
-          export MONO_LOG_LEVEL=debug
+          # sudo apt-get install clang
+          # sudo apt-get install libc++-dev
+          # sudo apt-get install libc++abi-dev
+          # export MONO_LOG_LEVEL=debug
+          
           ldd -r unity-project/Assets/Plugins/x86_64/libpuerts.so
       # - uses: game-ci/unity-test-runner@v2
       #   id: tests
