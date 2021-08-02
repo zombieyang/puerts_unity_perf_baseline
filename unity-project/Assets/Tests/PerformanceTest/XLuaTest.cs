@@ -16,6 +16,10 @@ public class XLuaTest
         int i;
         env.Global.Get("id", out i);
         Assert.True(i == 3);
+
+        Puerts.jsEnv JsEnv = new Puerts.JsEnv();
+        int j = JsEnv.Eval<int>("4");
+        Assert.True(j == 4);
     }
 
     // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
