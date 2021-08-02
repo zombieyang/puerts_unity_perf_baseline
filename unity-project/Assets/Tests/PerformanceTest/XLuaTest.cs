@@ -17,7 +17,7 @@ public class XLuaTest
         env.Global.Get("id", out i);
         Assert.True(i == 3);
 
-        Puerts.jsEnv JsEnv = new Puerts.JsEnv();
+        Puerts.JsEnv JsEnv = new Puerts.JsEnv();
         int j = JsEnv.Eval<int>("4");
         Assert.True(j == 4);
     }
