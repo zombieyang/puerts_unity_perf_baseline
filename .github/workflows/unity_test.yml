@@ -12,8 +12,8 @@ jobs:
         projectPath:
           - unity-project
         testMode:
-          - playmode
-          # - editmode
+          # - playmode
+          - editmode
     steps:
       - uses: actions/checkout@v2
         with:
