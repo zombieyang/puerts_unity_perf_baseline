@@ -15,6 +15,7 @@ public abstract class IUnknown
 
     public virtual void Init()
     {
+        
     }
 
     /// <summary>
