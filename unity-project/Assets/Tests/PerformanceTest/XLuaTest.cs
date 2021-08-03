@@ -16,7 +16,10 @@ public class XLuaTest
         int i;
         env.Global.Get("id", out i);
         Assert.True(i == 3);
-
+    }
+    [Test]
+    public void PuertsSimplePasses()
+    {
         Puerts.JsEnv JsEnv = new Puerts.JsEnv();
         int j = JsEnv.Eval<int>("4");
         Assert.True(j == 4);
