@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Puerts
@@ -93,8 +94,8 @@ namespace Puerts
                 types[i] = parameterType.IsByRef ? parameterType.GetElementType() : parameterType;
                 typeMasks[i] = GeneralGetterManager.GetJsTypeMask(parameterType);
                 argsTranslateFuncs[i] = generalGetterManager.GetTranslateFunc(parameterType);
-                byRef[i] = parameterType.IsByRef;
-                if (parameterType.IsByRef)
+                byRef[i] = parameterType.IsByRef && !parameterInfo.IsIn;
+                if (byRef[i])
                 {
                     byRefValueSetFuncs[i] = generalSetterManager.GetTranslateFunc(parameterType.GetElementType());
                 }
@@ -143,6 +144,11 @@ namespace Puerts
                         {
                             argJsType = PuertsDLL.GetJsValueType(callInfo.Isolate, callInfo.NativePtrs[i], true);
                         }
+                    }
+                    if (argJsType == JsValueType.NativeObject && types[i] == typeof(JSObject)) 
+                    {
+                        // 非要把一个NativeObject赋值给JSObject是允许的。
+                        continue;
                     }
                     if ((typeMasks[i] & argJsType) != argJsType)
                     {
@@ -236,15 +242,20 @@ namespace Puerts
 
         ConstructorInfo constructorInfo = null;
 
+        Type type = null;
+
+
         GeneralGetterManager generalGetterManager = null;
 
         GeneralSetter resultSetter = null;
+        bool extensionMethod = false;
 
-        public OverloadReflectionWrap(MethodBase methodBase, GeneralGetterManager generalGetterManager, GeneralSetterManager generalSetterManager)
+        public OverloadReflectionWrap(MethodBase methodBase, GeneralGetterManager generalGetterManager, GeneralSetterManager generalSetterManager, bool extensionMethod = false)
         {
-            parameters = new Parameters(methodBase.GetParameters(), generalGetterManager, generalSetterManager);
+            parameters = new Parameters(methodBase.GetParameters().Skip(extensionMethod ? 1 : 0).ToArray(), generalGetterManager, generalSetterManager);
             
             this.generalGetterManager = generalGetterManager;
+            this.extensionMethod = extensionMethod;
 
             if (methodBase.IsConstructor)
             {
@@ -257,6 +268,17 @@ namespace Puerts
             }
         }
 
+        // 供struct的无参默认构造函数使用
+        public OverloadReflectionWrap(Type type, GeneralGetterManager generalGetterManager)
+        {
+            ParameterInfo[] info = { };
+            parameters = new Parameters(info, generalGetterManager, null);
+
+            this.generalGetterManager = generalGetterManager;
+
+            this.type = type;
+        }
+
         public bool IsMatch(CallInfo callInfo)
         {
             return parameters.IsMatch(callInfo);
@@ -267,7 +289,12 @@ namespace Puerts
             try
             {
                 object target = methodInfo.IsStatic ? null : generalGetterManager.GetSelf(callInfo.Self);
-                object ret = methodInfo.Invoke(target, parameters.GetArguments(callInfo));
+                object[] args = parameters.GetArguments(callInfo);
+                if (this.extensionMethod)
+                {
+                    args = new object[] { generalGetterManager.GetSelf(callInfo.Self) }.Concat(args).ToArray();
+                }
+                object ret = methodInfo.Invoke(target, args);
                 parameters.FillByRefParameters(callInfo);
                 resultSetter(callInfo.Isolate, NativeValueApi.SetValueToResult, callInfo.Info, ret);
             }
@@ -279,6 +306,10 @@ namespace Puerts
 
         public object Construct(CallInfo callInfo)
         {
+            if (constructorInfo == null && type != null) 
+            {
+                return Activator.CreateInstance(type);
+            }
             return constructorInfo.Invoke(parameters.GetArguments(callInfo));
         }
     }

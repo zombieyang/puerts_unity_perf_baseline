@@ -30,45 +30,27 @@ namespace Puerts
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
-    public unsafe delegate void V8Function(IntPtr isolate, CSharpToJsValue* info, IntPtr self, int paramLen, long data);
+    public delegate IntPtr V8ConstructorCallback(IntPtr isolate, IntPtr info, int paramLen, long data);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
-    public delegate IntPtr V8ConstructorCallback(IntPtr isolate, IntPtr info, int paramLen, long data);
+    public delegate string ModuleResolveCallback(string identifer, int jsEnvIdx);
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 #endif
     public delegate void V8DestructorCallback(IntPtr self, long data);
 
-
-    [StructLayout(LayoutKind.Explicit)]
-    public struct ValueUnion
-    {
-        [FieldOffset(0)]
-        public double Number;
-        [FieldOffset(0)]
-        public bool Boolean;
-        [FieldOffset(0)]
-        public long BigInt;
-        [FieldOffset(0)]
-        public IntPtr Pointer;
-    };
-
-    [StructLayout(LayoutKind.Sequential, Pack = 8)]
-    public struct CSharpToJsValue
-    {
-        public JsValueType Type;
-        public int ClassIDOrValueLength;
-        public ValueUnion Data;
-    };
-
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+#endif
     public delegate void LogCallback(string content);
 
     [Flags]
     public enum JsValueType
     {
+        Invalid = 0,
         NullOrUndefined = 1,
         BigInt = 2,
         Number = 4,
@@ -81,7 +63,7 @@ namespace Puerts
         Date = 512,
         ArrayBuffer = 1024,
         Unknow = 2048,
-        Any = NullOrUndefined | BigInt | Number | String | Boolean | NativeObject | Array | Function | Date | ArrayBuffer,
+        Any = NullOrUndefined | BigInt | Number | String | Boolean | NativeObject | JsObject | Array | Function | Date | ArrayBuffer,
     };
 
     public class PuertsDLL
@@ -96,8 +78,11 @@ namespace Puerts
         public static extern int GetLibVersion();
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr CreateJSEngine();
+        public static extern int GetLibBackend();
 
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr CreateJSEngine();
+        
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateJSEngineWithExternalEnv(IntPtr externalRuntime, IntPtr externalContext);
 
@@ -116,36 +101,35 @@ namespace Puerts
             SetGlobalFunction(isolate, name, fn, data);
         }
 
-        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetGlobalFunctionV2(IntPtr isolate, string name, IntPtr v8FunctionCallback, long data);
+        private const int TEMP_STRING_BUFFER_SIZE = 1024;
 
-        public static void SetGlobalFunction(IntPtr isolate, string name, V8Function v8FunctionCallback, long data)
+        [ThreadStatic]
+        private static byte[] s_tempNativeStringBuffer;
+
+        private static byte[] GetTempNativeStringBuff(int strlen)
         {
-#if PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
-            GCHandle.Alloc(v8FunctionCallback);
-#endif
-            IntPtr fn = v8FunctionCallback == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(v8FunctionCallback);
-            SetGlobalFunctionV2(isolate, name, fn, data);
+            byte[] buf = s_tempNativeStringBuffer ?? (s_tempNativeStringBuffer = new byte[TEMP_STRING_BUFFER_SIZE]);
+            if (buf.Length < strlen)
+            {
+                return new byte[strlen];
+            }
+            return buf;
         }
+
 
         private static string GetStringFromNative(IntPtr str, int strlen)
         {
             if (str != IntPtr.Zero)
             {
-#if PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
-                byte[] buffer = new byte[strlen];
-                Marshal.Copy(str, buffer, 0, strlen);
-                return Encoding.UTF8.GetString(buffer);
-#else
-                string ret = Marshal.PtrToStringAnsi(str, strlen);
-                if (ret == null)
+#if PUERTS_UNSAFE
+                unsafe
                 {
-                    int len = strlen;
-                    byte[] buffer = new byte[len];
-                    Marshal.Copy(str, buffer, 0, len);
-                    return Encoding.UTF8.GetString(buffer);
+                    return Encoding.UTF8.GetString((byte*)str, strlen);
                 }
-                return ret;
+#else
+                byte[] buffer = GetTempNativeStringBuff(strlen);
+                Marshal.Copy(str, buffer, 0, strlen);
+                return Encoding.UTF8.GetString(buffer, 0, strlen);
 #endif
             }
             else
@@ -180,6 +164,34 @@ namespace Puerts
         }
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void SetModuleResolver(IntPtr isolate, IntPtr callback, int jsEnvIdx);
+        public static void SetModuleResolver(IntPtr isolate, ModuleResolveCallback callback, int jsEnvIdx)
+        {
+#if PUERTS_GENERAL || (UNITY_WSA && !UNITY_EDITOR)
+            GCHandle.Alloc(callback);
+#endif
+            IntPtr fn = callback == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(callback);
+            SetModuleResolver(isolate, fn, jsEnvIdx);
+        }
+
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr ExecuteModule(IntPtr isolate, string path, string exportee);
+
+#if PUERTS_GENERAL && !PUERTS_GENERAL_OSX
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr Eval(IntPtr isolate, byte[] code, string path);
+
+        public static IntPtr EvalChecked(IntPtr isolate, string code, string path)
+        {
+            if (code == null)
+            {
+                throw new InvalidProgramException("eval null string");
+            }
+            return Eval(isolate, Encoding.UTF8.GetBytes(code), path);
+        }
+#else
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr Eval(IntPtr isolate, string code, string path);
 
         public static IntPtr EvalChecked(IntPtr isolate, string code, string path)
@@ -190,9 +202,10 @@ namespace Puerts
             }
             return Eval(isolate, code, path);
         }
+#endif
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int RegisterClass(IntPtr isolate, int BaseTypeId, string fullName, IntPtr constructor, IntPtr destructor, long data);
+        public static extern int _RegisterClass(IntPtr isolate, int BaseTypeId, string fullName, IntPtr constructor, IntPtr destructor, long data);
 
         public static int RegisterClass(IntPtr isolate, int BaseTypeId, string fullName, V8ConstructorCallback constructor, V8DestructorCallback destructor, long data)
         {
@@ -200,10 +213,10 @@ namespace Puerts
             GCHandle.Alloc(constructor);
             GCHandle.Alloc(destructor);
 #endif
-            IntPtr fn1 = constructor == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(constructor);
+            IntPtr fn1 = constructor == null ? IntPtr.Zero: Marshal.GetFunctionPointerForDelegate(constructor);
             IntPtr fn2 = destructor == null ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(destructor);
 
-            return RegisterClass(isolate, BaseTypeId, fullName, fn1, fn2, data);
+            return _RegisterClass(isolate, BaseTypeId, fullName, fn1, fn2, data);
         }
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
@@ -259,8 +272,13 @@ namespace Puerts
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void ReturnNumber(IntPtr isolate, IntPtr info, double number);
 
+#if PUERTS_GENERAL && !PUERTS_GENERAL_OSX
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl, EntryPoint = "ReturnString")]
+        public static extern void __ReturnString(IntPtr isolate, IntPtr info, byte[] str);
+#else
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl, EntryPoint = "ReturnString")]
         public static extern void __ReturnString(IntPtr isolate, IntPtr info, string str);
+#endif
 
         public static void ReturnString(IntPtr isolate, IntPtr info, string str)
         {
@@ -270,7 +288,11 @@ namespace Puerts
             }
             else
             {
+#if PUERTS_GENERAL && !PUERTS_GENERAL_OSX
+                __ReturnString(isolate, info, Encoding.UTF8.GetBytes(str));
+#else
                 __ReturnString(isolate, info, str);
+#endif
             }
         }
 
@@ -306,15 +328,6 @@ namespace Puerts
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern double GetDateFromValue(IntPtr isolate, IntPtr value, bool isByRef);
-
-        public static double GetDateFromValueChecked(IntPtr isolate, IntPtr value, bool isByRef)
-        {
-            if (GetJsValueType(isolate, value, isByRef) != JsValueType.Date)
-            {
-                throw new InvalidOperationException("expect a date");
-            }
-            return GetDateFromValue(isolate, value, isByRef);
-        }
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetStringFromValue(IntPtr isolate, IntPtr value, out int len, bool isByRef);
@@ -362,8 +375,36 @@ namespace Puerts
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetDateToOutValue(IntPtr isolate, IntPtr value, double date);
 
+#if PUERTS_GENERAL && !PUERTS_GENERAL_OSX
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SetStringToOutValue(IntPtr isolate, IntPtr value, string str);
+        public static extern void SetStringToOutValue(IntPtr isolate, IntPtr value, byte[] str);
+
+        public static void SetStringToOutValue(IntPtr isolate, IntPtr value, string str)
+        {
+            if (str == null) 
+            {
+                SetNullToOutValue(isolate, value);
+            }
+            else
+            {
+                SetStringToOutValue(isolate, value, Encoding.UTF8.GetBytes(str));
+            }
+        }
+#else
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SetStringToOutValue")]
+        protected static extern void __SetStringToOutValue(IntPtr isolate, IntPtr value, string str);
+        public static void SetStringToOutValue(IntPtr isolate, IntPtr value, string str)
+        {
+            if (str == null) 
+            {
+                SetNullToOutValue(isolate, value);
+            }
+            else
+            {
+                __SetStringToOutValue(isolate, value, str);
+            }
+        }
+#endif
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetBooleanToOutValue(IntPtr isolate, IntPtr value, bool b);
@@ -455,15 +496,6 @@ namespace Puerts
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern double GetDateFromResult(IntPtr resultInfo);
 
-        public static double GetDateFromResultChecked(IntPtr resultInfo)
-        {
-            if (GetResultType(resultInfo) != JsValueType.Date)
-            {
-                throw new InvalidOperationException("expect a date");
-            }
-            return GetDateFromResult(resultInfo);
-        }
-
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetStringFromResult(IntPtr resultInfo, out int len);
 
@@ -486,7 +518,6 @@ namespace Puerts
         public static long GetBigIntFromResultCheck(IntPtr resultInfo)
         {
             if (!ResultIsBigInt(resultInfo))
-                //if (GetResultType(resultInfo) != JsValueType.BigInt)
             {
                 throw new InvalidOperationException("expect a bigint");
             }
@@ -517,6 +548,9 @@ namespace Puerts
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern bool InspectorTick(IntPtr isolate);
+
+        [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void LogicTick(IntPtr isolate);
 
         [DllImport(DLLNAME, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetLogCallback(IntPtr log, IntPtr logWarning, IntPtr logError);
