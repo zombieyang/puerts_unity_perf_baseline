@@ -34,7 +34,8 @@ jobs:
           sudo apt-get install libc++abi-dev
           export MONO_LOG_LEVEL=debug
           
-          # ldd -r unity-project/Assets/Plugins/x86_64/libpuerts.so
+          mkdir -p ${{ matrix.testMode }}-artifacts
+          ldd -r unity-project/Assets/Plugins/x86_64/libpuerts.so
       - uses: game-ci/unity-test-runner@v2
         id: tests
         env:
