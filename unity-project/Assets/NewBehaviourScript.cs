@@ -46,7 +46,7 @@ public class NewBehaviourScript : MonoBehaviour
 
 
         PuertsDLL.SetGlobalFunction(env.isolate, "oldCallback", v8FunctionCallback, 0);
-        PuertsDLL.SetGlobalFunction(env.isolate, "newCallback", newFunctionCallback, 0);
+        // PuertsDLL.SetGlobalFunction(env.isolate, "newCallback", newFunctionCallback, 0);
         double resultOld = env.Eval<double>(@"
             for (var i = 0; i < 10000; i++)
                 global.oldCallback(1,2,3,4)
@@ -57,16 +57,16 @@ public class NewBehaviourScript : MonoBehaviour
             Date.now() - start1;
         ");
         text1.text = "old: " + resultOld;
-        double resultNew = env.Eval<double>(@"
-            for (var i = 0; i < 10000; i++)
-                global.newCallback(5,6,7,8)
-            var start2 = Date.now();
-            for (var i = 0; i < 1000000; i++)
-                global.newCallback(5,6,7,8)
+        // double resultNew = env.Eval<double>(@"
+        //     for (var i = 0; i < 10000; i++)
+        //         global.newCallback(5,6,7,8)
+        //     var start2 = Date.now();
+        //     for (var i = 0; i < 1000000; i++)
+        //         global.newCallback(5,6,7,8)
 
-            Date.now() - start2;
-        ");
-        text2.text = "new: " + resultNew;
+        //     Date.now() - start2;
+        // ");
+        // text2.text = "new: " + resultNew;
 
         LuaEnv luaEnv = new LuaEnv();
         luaEnv.DoString(@"
@@ -108,11 +108,11 @@ public class NewBehaviourScript : MonoBehaviour
         }
     }
 
-    [Puerts.MonoPInvokeCallback(typeof(V8Function))]
-    public static unsafe void newFunctionCallback(IntPtr isolate, CSharpToJsValue* value, IntPtr self, int paramLen, long data)
-    {
-        // UnityEngine.Debug.Log(value[0].Data.Number + "_" + value[1].Data.Number + "_" + value[2].Data.Number + "_" + value[3].Data.Number);
-    }
+    // [Puerts.MonoPInvokeCallback(typeof(V8Function))]
+    // public static unsafe void newFunctionCallback(IntPtr isolate, CSharpToJsValue* value, IntPtr self, int paramLen, long data)
+    // {
+    //     // UnityEngine.Debug.Log(value[0].Data.Number + "_" + value[1].Data.Number + "_" + value[2].Data.Number + "_" + value[3].Data.Number);
+    // }
 
     // Update is called once per frame
     void Update()

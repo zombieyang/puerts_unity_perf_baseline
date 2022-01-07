@@ -30,7 +30,7 @@ namespace Puerts
 
         internal readonly JSObjectFactory jsObjectFactory;
 
-        internal IntPtr isolate;
+        public IntPtr isolate;
 
         internal ObjectPool objectPool;
 
