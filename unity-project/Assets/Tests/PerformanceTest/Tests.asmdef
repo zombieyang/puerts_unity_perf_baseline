@@ -4,7 +4,7 @@
         "TestAssemblies"
     ],
     "references": [
-        "Puerts-CSharp",
+        "com.tencent.puerts.core",
         "XLua-CSharp",
         "Unity.PerformanceTesting",
         "PuertsTestClass"
