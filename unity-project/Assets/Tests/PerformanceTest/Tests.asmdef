@@ -1,25 +1,29 @@
 {
     "name": "Tests",
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "rootNamespace": "",
     "references": [
         "com.tencent.puerts.core",
         "XLua-CSharp",
         "Unity.PerformanceTesting",
-        "PuertsTestClass"
+        "PuertsTestClass",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
+        "nunit.framework.dll",
         "nunit.framework.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
         "UNITY_INCLUDE_TESTS"
     ],
     "versionDefines": [],

@@ -57,13 +57,13 @@ namespace Tests
             Assert.IsTrue(result);
         }
 
-        [Test, Performance]
-        public void DateStatic()
-        {
-            var result = Run<DateTime>(false, "DateOut");
+        // [Test, Performance]
+        // public void DateStatic()
+        // {
+        //     var result = Run<DateTime>(false, "DateOut");
 
-            Assert.IsTrue(result.Year > 2000);
-        }
+        //     Assert.IsTrue(result.Year > 2000);
+        // }
 
         [Test, Performance]
         public void DateReflection()
@@ -73,13 +73,13 @@ namespace Tests
             Assert.IsTrue(result.Year > 2000);
         }
 
-        [Test, Performance]
-        public void BigIntStatic()
-        {
-            var result = Run<long>(false, "BigIntOut");
+        // [Test, Performance]
+        // public void BigIntStatic()
+        // {
+        //     var result = Run<long>(false, "BigIntOut");
 
-            Assert.IsTrue(result > 922337203685477);
-        }
+        //     Assert.IsTrue(result > 922337203685477);
+        // }
 
         [Test, Performance]
         public void BigIntReflection()

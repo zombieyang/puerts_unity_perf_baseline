@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{1061E76C-DC50-9403-6928-4E59A3A9999F}</ProjectGuid>
+    <ProjectGuid>{C6ABC04F-0803-018E-D950-18AC5019ACCC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Assembly-CSharp-Editor</AssemblyName>
+    <AssemblyName>XLua-CSharp-Editor</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -56,9 +56,26 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Tests\Editor\ExamplesCfg.cs" />
-    <Compile Include="Assets\Tests\Editor\PuertsTest.cs" />
-    <Compile Include="Assets\XLua\Editor\ExampleConfig.cs" />
+    <Compile Include="Assets\XLua\XLua-CSharp\Src\Editor\LinkXmlGen\LinkXmlGen.cs" />
+    <Compile Include="Assets\XLua\XLua-CSharp\Src\Editor\TemplateRef.cs" />
+    <Compile Include="Assets\XLua\XLua-CSharp\Src\Editor\Hotfix.cs" />
+    <Compile Include="Assets\XLua\XLua-CSharp\Src\Editor\Generator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaInterfaceBridge.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaWrapPusher.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\XLua-CSharp-Editor.asmdef" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaDelegateWrap.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaRegister.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaClassWrap.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaRegisterGCM.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\LinkXmlGen\LinkXmlGen.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\PackUnpack.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaEnumWrapGCM.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaClassWrapGCM.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\TemplateCommon.lua.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaDelegateBridge.tpl.txt" />
+    <None Include="Assets\XLua\XLua-CSharp\Src\Editor\Template\LuaEnumWrap.tpl.txt" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -661,61 +678,23 @@
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>T:\Unity\2020.3.35f1c1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.TestRunner">
       <HintPath>Library\ScriptAssemblies\UnityEngine.TestRunner.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.TestRunner">
       <HintPath>Library\ScriptAssemblies\UnityEditor.TestRunner.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.VSCode.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.VisualStudio.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.VisualStudio.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="com.tencent.puerts.core">
-      <HintPath>Library\ScriptAssemblies\com.tencent.puerts.core.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Timeline">
-      <HintPath>Library\ScriptAssemblies\Unity.Timeline.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="com.tencent.puerts.core.Editor">
-      <HintPath>Library\ScriptAssemblies\com.tencent.puerts.core.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Rider.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.Rider.Editor.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\ScriptAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="XLua-CSharp.csproj">
       <Project>{2B82C324-7CB5-F7A8-B938-DDEA57B94A3B}</Project>
       <Name>XLua-CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="XLua-CSharp-Editor.csproj">
-      <Project>{C6ABC04F-0803-018E-D950-18AC5019ACCC}</Project>
-      <Name>XLua-CSharp-Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="PuertsTestClass.csproj">
-      <Project>{278103A3-ECE1-84DA-5E53-B35547B7A945}</Project>
-      <Name>PuertsTestClass</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
