@@ -1,0 +1,24 @@
+{
+  "name": "puerts_unity_perf_baseline",
+  "version": "1.0.0",
+  "description": "",
+  "main": "parse-result.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zombieyang/puerts_unity_perf_baseline.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zombieyang/puerts_unity_perf_baseline/issues"
+  },
+  "homepage": "https://github.com/zombieyang/puerts_unity_perf_baseline#readme",
+  "dependencies": {
+    "commander": "^9.3.0",
+    "shelljs": "^0.8.5",
+    "xml-js": "^1.6.11"
+  }
+}
