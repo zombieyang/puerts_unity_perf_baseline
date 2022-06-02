@@ -18,3 +18,5 @@ sx.exec(`${program.args[0]} -batchmode -testPlatform StandaloneWindows -projectP
 require('./parse-result').parseResult(`${pwd}/res.xml`);
 sx.rm(`${pwd}/res.xml`)
 sx.rm(`${pwd}/log.txt`)
+sx.rm('-rf', `${pwd}/unity-project/Library`)
+sx.rm('-rf', `${pwd}/unity-project/Logs`)
