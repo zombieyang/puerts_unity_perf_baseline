@@ -1,24 +1,14 @@
 const fs = require('fs');
-const path = require('path');
-const pwd = process.cwd();
 
-const { program } = require('commander');
 const xmljs = require('xml-js');
 
-if (require.main === module) {
-    program.parse()
-    parseResult(path.join(pwd, program.args[0]));
-
-} else {
-    exports.parseResult = parseResult;
-}
-
-function parseResult(xmlPath) {
+exports.parseResult = function parseResult(xmlPath) {
     const xmlResultPath = xmlPath;
     const resultFileContent = fs.readFileSync(xmlResultPath, 'utf-8');
     const json = xmljs.xml2js(resultFileContent, { compact: false, spaces: 4 });
+    let output = "";
     formatPrint(iterateXMLNode(json));
-    // fs.writeFileSync(xmlResultPath + ".json", JSON.stringify(iterateXMLNode(json)));
+    return output
     
     function iterateXMLNode(xmlNode) {
         const ret = {};
@@ -63,11 +53,11 @@ function parseResult(xmlPath) {
                 jsonNode.type == 'assembly' ||
                 jsonNode.type == 'test-fixture'
             ) {
-                console.log(makeIndent(layer) + jsonNode.name + ":");
+                output += (makeIndent(layer) + jsonNode.name + ":") + "\n";
             }
     
             if (jsonNode.type == 'test-case') {
-                console.log(makeIndent(layer) + jsonNode.result + " - " + jsonNode.name + " - " + "avg: " + (jsonNode.avg || 0))
+                output += (makeIndent(layer) + jsonNode.result + " - " + jsonNode.name + " - " + "avg: " + (jsonNode.avg || 0)) + "\n"
             }
             jsonNode.elements?.forEach(element => {
                 formatPrint(element, layer + 1)
