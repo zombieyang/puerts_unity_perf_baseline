@@ -1,6 +1,7 @@
 ﻿{
 	"name": "PuertsTestClass",
     "references": [
-        "com.tencent.puerts.core"
+        "com.tencent.puerts.core",
+        "XLua-CSharp"
     ]
 }

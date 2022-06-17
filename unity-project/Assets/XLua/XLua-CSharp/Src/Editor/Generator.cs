@@ -1812,21 +1812,23 @@ namespace CSObjectWrapEditor
                         return false;
                 }
             }
-            return true;
+            return true; 
         }
-#if !XLUA_GENERAL
-        [UnityEditor.Callbacks.PostProcessBuild(1)]
-        public static void CheckGenrate(BuildTarget target, string pathToBuiltProject)
-        {
-            if (EditorApplication.isCompiling || Application.isPlaying)
-            {
-                return;
-            }
-            if (!DelegateBridge.Gen_Flag)
-            {
-                throw new InvalidOperationException("Code has not been genrated, may be not work in phone!");
-            }
-        }
-#endif
+
+        
+// #if !XLUA_GENERAL
+//         [UnityEditor.Callbacks.PostProcessBuild(1)]
+//         public static void CheckGenrate(BuildTarget target, string pathToBuiltProject)
+//         {
+//             if (EditorApplication.isCompiling || Application.isPlaying)
+//             {
+//                 return;
+//             }
+//             if (!DelegateBridge.Gen_Flag)
+//             {
+//                 throw new InvalidOperationException("Code has not been genrated, may be not work in phone!");
+//             }
+//         }
+// #endif
     }
 }

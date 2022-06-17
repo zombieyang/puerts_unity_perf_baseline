@@ -147,3 +147,49 @@ public class TestClassStatic
 
     public static void NativeObjectRef(ref NativeObjectClass value) { value.name = "NOC"; }
 }
+[XLua.LuaCallCSharp]
+public class XLuaClass
+{
+    public static void EmptyFunction() { }
+
+    public static void IntArg(int value) { }
+    public static void IntArgChecked(int value) { Assert.IsTrue(value > 0); }
+
+    public static void BooleanArg(bool value) { }
+    public static void BooleanArgChecked(bool value) { Assert.IsTrue(value); }
+
+    public static void StringArg(string value) { }
+    public static void StringArgChecked(string value) { Assert.IsTrue(value.Length > 0); }
+
+    public static void DateArg(DateTime value) { }
+    public static void DateArgChecked(DateTime value) { Assert.IsTrue(value.Year > 2000); }
+
+    public static void BigIntArg(long value) { }
+    public static void BigIntArgChecked(long value) { Assert.IsTrue(value > 922337203685477); }
+
+    public static void NativeObjectArg(NativeObjectClass value) { }
+    public static void NativeObjectArgChecked(NativeObjectClass value) { Assert.IsTrue(value.name == "NativeObject"); }
+}
+[XLua.LuaCallCSharp]
+public class XLuaClassReflection
+{
+    public static void EmptyFunction() { }
+
+    public static void IntArg(int value) { }
+    public static void IntArgChecked(int value) { Assert.IsTrue(value > 0); }
+
+    public static void BooleanArg(bool value) { }
+    public static void BooleanArgChecked(bool value) { Assert.IsTrue(value); }
+
+    public static void StringArg(string value) { }
+    public static void StringArgChecked(string value) { Assert.IsTrue(value.Length > 0); }
+
+    public static void DateArg(DateTime value) { }
+    public static void DateArgChecked(DateTime value) { Assert.IsTrue(value.Year > 2000); }
+
+    public static void BigIntArg(long value) { }
+    public static void BigIntArgChecked(long value) { Assert.IsTrue(value > 922337203685477); }
+
+    public static void NativeObjectArg(NativeObjectClass value) { }
+    public static void NativeObjectArgChecked(NativeObjectClass value) { Assert.IsTrue(value.name == "NativeObject"); }
+}

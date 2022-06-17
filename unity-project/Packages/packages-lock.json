@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.tencent.puerts.core": {
-      "version": "file:../../package1.3.4",
+      "version": "file:../../package",
       "depth": 0,
       "source": "local",
       "dependencies": {}
