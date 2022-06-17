@@ -8,13 +8,13 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class GetJsCallArgument
+    public class GetJsCallArgument2
     {
         private void RunJSCallCS(bool isReflection, string methodName, string jsValue)
         {
             string className = isReflection ? "TestClassReflection" : "TestClassStatic";
             JsEnv jsEnv = new JsEnv();
-            jsEnv.AddLazyStaticWrapLoader(typeof(TestClassStatic), PuertsStaticWrap.TestClassStatic_Wrap.GetRegisterInfo);
+            jsEnv.AddLazyStaticWrapLoader(typeof(TestClassStatic), PuertsStaticWrap.TestClassStatic2_Wrap.GetRegisterInfo);
             jsEnv.Eval("global.CS = require('csharp'); global.PUERTS = require('puerts');");
             jsEnv.Eval(string.Format("for (let i = 0; i < {3}; i++) CS.{0}.{1}({2})", className, methodName, jsValue, PuertsPerformanceUtil.warmUpRepeatCount));
             Measure
@@ -40,85 +40,85 @@ namespace Tests
         }
 
         [Test, Performance]
-        public void IntStaticPuerts()
+        public void IntStatic()
         {
             RunJSCallCSStatic("IntArg", "1");
         }
 
         [Test, Performance]
-        public void IntReflectionPuerts()
+        public void IntReflection()
         {
             RunJSCallCSReflection("IntArg", "1");
         }
 
         [Test, Performance]
-        public void BooleanStaticPuerts()
+        public void BooleanStatic()
         {
             RunJSCallCSStatic("BooleanArg", "true");
         }
 
         [Test, Performance]
-        public void BooleanReflectionPuerts()
+        public void BooleanReflection()
         {
             RunJSCallCSReflection("BooleanArg", "true");
         }
 
         [Test, Performance]
-        public void DateStaticPuerts()
+        public void DateStatic()
         {
             RunJSCallCSStatic("DateArg", "new Date");
         }
 
         [Test, Performance]
-        public void DateReflectionPuerts()
+        public void DateReflection()
         {
             RunJSCallCSReflection("DateArg", "new Date");
         }
 
         [Test, Performance]
-        public void BigIntStaticPuerts()
+        public void BigIntStatic()
         {
             RunJSCallCSStatic("BigIntArg", "9223372036854775807n");
         }
 
         [Test, Performance]
-        public void BigIntReflectionPuerts()
+        public void BigIntReflection()
         {
             RunJSCallCSReflection("BigIntArg", "9223372036854775807n");
         }
 
         [Test, Performance]
-        public void StringStaticPuerts()
+        public void StringStatic()
         {
             RunJSCallCSStatic("StringArg", "'hello'");
         }
 
         [Test, Performance]
-        public void StringReflectionPuerts()
+        public void StringReflection()
         {
             RunJSCallCSReflection("StringArg", "'hello'");
         }
 
         [Test, Performance]
-        public void ArrayBufferStaticPuerts()
+        public void ArrayBufferStatic()
         {
             RunJSCallCSStatic("ArrayBufferArg", "new ArrayBuffer(3)");
         }
 
         [Test, Performance]
-        public void ArrayBufferReflectionPuerts()
+        public void ArrayBufferReflection()
         {
             RunJSCallCSReflection("ArrayBufferArg", "new ArrayBuffer(3)");
         }
 
         [Test, Performance]
-        public void NativeObjectStaticPuerts()
+        public void NativeObjectStatic()
         {
             RunJSCallCSStatic("NativeObjectArg", "new CS.NativeObjectClass");
         }
 
         [Test, Performance]
-        public void NativeObjectReflectionPuerts()
+        public void NativeObjectReflection()
         {
             RunJSCallCSReflection("NativeObjectArg", "new CS.NativeObjectClass");
         }

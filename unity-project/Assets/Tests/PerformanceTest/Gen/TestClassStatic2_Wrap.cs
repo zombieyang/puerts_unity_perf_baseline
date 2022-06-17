@@ -3,7 +3,7 @@ using System;
 
 namespace PuertsStaticWrap
 {
-    public static class TestClassStatic_Wrap
+    public static class TestClassStatic2_Wrap
     {
 
         [Puerts.MonoPInvokeCallback(typeof(Puerts.V8ConstructorCallback))]
@@ -324,7 +324,7 @@ namespace PuertsStaticWrap
             {
                 Puerts.PuertsDLL.ThrowException(isolate, "c# exception:" + e.Message + ",stack:" + e.StackTrace);
             }
-        }
+        } 
         
         [Puerts.MonoPInvokeCallback(typeof(Puerts.V8FunctionCallback))]
         private static void F_StringArgChecked(IntPtr isolate, IntPtr info, IntPtr self, int paramLen, long data)
