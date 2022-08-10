@@ -63,11 +63,12 @@ if (options.local || options.upm) {
 }
 
 console.log("[Puer] running test");
-sx.exec(`${unityPath} -batchmode -testPlatform StandaloneWindows -projectPath "${pwd}/unity-project" -runTests -testResults "${pwd}/res.xml" -logFile "log.txt"`);
+sx.exec(`${unityPath} -batchmode -testPlatform StandaloneWindows64 -projectPath "${pwd}/unity-project" -runTests -testResults "${pwd}/res.xml" -logFile "log.txt"`);
 console.log("[Puer] parsing result");
 const output = require('./lib/parse-result').parseResult(`${pwd}/res.xml`);
 
 console.log("[Puer] writing file");
+sx.mkdir("-p", path.join(pwd, '.test-report'));
 fs.writeFileSync(
     path.join(pwd, '.test-report', upmSetting.dependencies['com.tencent.puerts.core'].replace('file:../../', '') + '.txt'), 
     output
