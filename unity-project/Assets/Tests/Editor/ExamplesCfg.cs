@@ -22,8 +22,15 @@ public class TestCfg
         {
             return new List<Type>()
             {
-                 typeof(TestClassStatic)
+                typeof(TestClassStatic)
             };
+        }
+    }
+
+    [CodeOutputDirectory]
+    static string outputD {
+        get {
+            return Application.dataPath + "/Tests/PerformanceTest/Gen/";
         }
     }
 
